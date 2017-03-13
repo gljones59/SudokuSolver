@@ -1,0 +1,119 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+	<meta charset="utf-8" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+    <script src="SudokuSolver.js"></script>
+    <style>
+        input {
+            text-align: center;
+        }
+    </style>
+
+</head>
+
+<body>
+    <h1 style="margin: auto; width: 50%;">Sudoku Board</h1>
+    <p>&nbsp;</p>
+    <div id="sudokuBoard" style="margin: auto; width: 50%;"></div>
+    <input type="button" value="Calculate" onclick="sudokuBoard = solveBoard(sudokuBoard); paintBoard(sudokuBoard);" />
+    <input type="button" value="Clear" onclick="sudokuBoard = boardCells(); paintBoard(sudokuBoard);" /><br /><br />
+    <input type="button" value="Set Easy" onclick="sudokuBoard = boardCells(); sudokuBoard = setBoardEasy(sudokuBoard); paintBoard(sudokuBoard);" />
+    <input type="button" value="Set Difficult" onclick="sudokuBoard = boardCells(); sudokuBoard = setBoardDifficult(sudokuBoard); paintBoard(sudokuBoard);" />
+    <input type="button" value="Set Very Difficult" onclick="sudokuBoard = boardCells(); sudokuBoard = setBoardVeryDifficult(sudokuBoard); paintBoard(sudokuBoard);" />
+<hr />
+    <h1 style="margin: auto; width: 50%;">Sudoku Board - Angular</h1>
+    <p>&nbsp;</p>
+    <div ng-app="SudokuSolver" ng-controller="SudokuCtrl">
+        <div style="margin: auto; width: 50%;">
+<!--- This uses the more complex parent.indix / index method to access the cells - left here for illustration purposes
+            <p></p>
+            <table border="1">
+                <tr ng-repeat="row in sudokuBoardng">
+                    <td ng-repeat="col in row">
+                        <input type="text" size="2" ng-model="sudokuBoardng[$parent.$index][$index].displayVal" style="{{sudokuBoardng[$parent.$index][$index].cellStyle}}" />
+                    </td>
+                </tr>
+            </table>
+            <p></p>
+-->
+            <p></p>
+            <table border="1">
+                <tr ng-repeat="row in sudokuBoardng">
+                    <td ng-repeat="col in row">
+                        <div data-tip=\"This is the text of the tooltip2\">
+                            <input type="text" size="2" title="{{col.tooltip + col.tooltipPossVals}}"
+                                   ng-model="col.displayVal" style="{{col.cellStyle}}" ng-change="ngChange(col);" />
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <p></p>
+        </div>
+        <input type="button" value="Calculate" ng-click="ngCalculate();" />
+        <input type="button" value="Clear" ng-click="ngClear();" /><br /><br />
+        <input type="button" value="Set Easy" ng-click="ngSetEasy();" />
+        <input type="button" value="Set Difficult" ng-click="ngSetDifficult();" />
+        <input type="button" value="Set Very Difficult" ng-click="ngSetVeryDifficult();" />
+        <hr />
+    </div>
+</body>
+</html>
+
+<script>
+    $(document).ready(function () {
+        sudokuBoard = boardCells();
+        sudokuBoard = setBoard(sudokuBoard);
+
+        $('[data-toggle="tooltip"]').tooltip();
+        paintBoard(sudokuBoard);
+    });
+</script>
+
+<script>
+    // And now for the angular module and controller setup
+    var app = angular.module("myApp", []);
+    app.controller("myCtrl", function ($scope) {
+
+    });
+
+    var SudokuSolver = angular.module("SudokuSolver", []);
+    SudokuSolver.controller("SudokuCtrl", function ($scope) {
+        $scope.sudokuBoardng = boardCells();
+        $scope.sudokuBoardng = setBoard($scope.sudokuBoardng);
+
+        $scope.ngCalculate = function () {
+            $scope.sudokuBoardng = solveBoard($scope.sudokuBoardng);
+        };
+
+        $scope.ngClear = function () {
+            $scope.sudokuBoardng = boardCells();
+        };
+
+        $scope.ngSetEasy = function () {
+            $scope.sudokuBoardng = boardCells();
+            $scope.sudokuBoardng = setBoardEasy($scope.sudokuBoardng);
+        };
+
+        $scope.ngSetDifficult = function () {
+            $scope.sudokuBoardng = boardCells();
+            $scope.sudokuBoardng = setBoardDifficult($scope.sudokuBoardng);
+        };
+
+        $scope.ngSetVeryDifficult = function () {
+            $scope.sudokuBoardng = boardCells();
+            $scope.sudokuBoardng = setBoardVeryDifficult($scope.sudokuBoardng);
+        };
+
+        $scope.ngChange = function (col) {
+            col.setKnown(col.displayVal);
+        }
+
+    });
+
+</script>
